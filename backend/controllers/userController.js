@@ -1,25 +1,38 @@
 const User = require('../models/userModel');
-const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
+const createToken = (id) => {
+  return jwt.sign({ id }, process.env.SECRET, { expiresIn: '3d' });
+};
 
 const loginUser = async (req, res) => {
-  res.status(200).json({ msg: 'login success' });
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.login(email, password);
+
+    // create token
+    const token = createToken(user.id);
+
+    res.status(200).json({ email, token });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 };
 
 const signupUser = async function (req, res) {
   const { name, email, password } = req.body;
 
-  const exists = await User.findOne({ email });
+  try {
+    const user = await User.signup(name, email, password);
 
-  if (exists) {
-    return res.status(500).json({ error: 'Email already in use' });
+    // create token
+    const token = createToken(user.id);
+
+    res.status(200).json({ email, token });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
   }
-
-  const salt = await bcrypt.genSalt(10);
-  const passwordHash = await bcrypt.hash(password, salt);
-
-  const user = await User.create({ email, password: passwordHash, name });
-
-  res.status(201).json({ email, user });
 };
 
 module.exports = { loginUser, signupUser };
