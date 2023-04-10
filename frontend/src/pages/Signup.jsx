@@ -3,7 +3,7 @@ import { useContext, useState } from 'react';
 import AuthContext from '../context/AuthContext';
 
 const Signup = () => {
-  const { setUser } = useContext(AuthContext);
+  const { setUser, setAuthorization } = useContext(AuthContext);
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -24,6 +24,7 @@ const Signup = () => {
       .then((resp) => {
         console.log(resp.data);
         localStorage.setItem('user', JSON.stringify(resp.data));
+        setAuthorization(resp?.data?.token);
         setUser(resp.data);
         setError(null);
         setLoading(false);

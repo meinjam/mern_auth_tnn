@@ -1,24 +1,25 @@
-import { Route, Routes, BrowserRouter } from 'react-router-dom';
+import { Route, Routes, Navigate } from 'react-router-dom';
 import Home from './pages/Home';
 import Navbar from './components/Navbar';
-import React from 'react';
+import React, { useContext } from 'react';
 import axios from 'axios';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import AuthContext from './context/AuthContext';
 
-axios.defaults.baseURL = 'http://localhost:7500';
-// axios.defaults.baseURL = process.env.REACT_APP_API_URL;
-axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token') ?? '';
+axios.defaults.baseURL = import.meta.env.VITE_APP_BASE_URL;
 
 function App() {
+  const { user } = useContext(AuthContext);
+
   return (
     <React.Fragment>
       <Navbar />
       <div className='pages'>
         <Routes>
-          <Route path='/' element={<Home />} />
-          <Route path='/login' element={<Login />} />
-          <Route path='/signup' element={<Signup />} />
+          <Route path='/' element={user ? <Home /> : <Navigate to='/login' />} />
+          <Route path='/login' element={!user ? <Login /> : <Navigate to='/' />} />
+          <Route path='/signup' element={!user ? <Signup /> : <Navigate to='/' />} />
         </Routes>
       </div>
     </React.Fragment>
