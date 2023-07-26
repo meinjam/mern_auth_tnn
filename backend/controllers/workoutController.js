@@ -4,7 +4,49 @@ const mongoose = require('mongoose');
 // get all workout
 const getAllWorkout = async (req, res) => {
   const user_id = req.user.id;
-  const workouts = await Workout.find({ user_id }).sort({ createdAt: -1 });
+  const workouts = await Workout.aggregate([
+    // get only user workout
+    {
+      $match: {
+        user_id: new mongoose.Types.ObjectId(user_id),
+      },
+    },
+    // join with users table
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'user_id',
+        foreignField: '_id',
+        as: 'userDetails',
+      },
+    },
+    // Unwind the 'userDetails' array (optional, if you want a single object instead of an array)
+    {
+      $unwind: {
+        path: '$userDetails',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    // get only specific fields
+    {
+      $project: {
+        _id: 0,
+        id: '$_id',
+        title: 1,
+        reps: 1,
+        load: 1,
+        createdAt: 1,
+        'userDetails.name': 1,
+        'userDetails.email': 1,
+      },
+    },
+    // sort by desc
+    {
+      $sort: {
+        createdAt: -1,
+      },
+    },
+  ]);
   res.status(200).json(workouts);
 };
 

@@ -51,6 +51,9 @@ header a {
   font-size: 1.2em;
   color: var(--primary);
 }
+.workout-details h4 a {
+  color: var(--primary);
+}
 .workout-details p {
   margin: 0;
   font-size: 0.9em;

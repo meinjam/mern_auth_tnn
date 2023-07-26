@@ -1,5 +1,6 @@
 import axios from 'axios';
 import moment from 'moment';
+import { Link } from 'react-router-dom';
 
 const WorkoutDetails = ({ workout, setWorkouts }) => {
   const handleClick = async () => {
@@ -17,7 +18,9 @@ const WorkoutDetails = ({ workout, setWorkouts }) => {
 
   return (
     <div className='workout-details'>
-      <h4>{workout.title}</h4>
+      <h4>
+        <Link to={`/${workout.id}`}>{workout.title}</Link>
+      </h4>
       <p>
         <strong>Load (kg): </strong>
         {workout.load}
@@ -30,6 +33,9 @@ const WorkoutDetails = ({ workout, setWorkouts }) => {
       <span onClick={handleClick} className='material-symbols-outlined'>
         delete
       </span>
+      {/* <span className='material-symbols-outlined' style={{ right: 65 }}>
+        edit
+      </span> */}
     </div>
   );
 };
